@@ -12,5 +12,14 @@ RUN apt-get update && apt-get install -y \
     libasound2 \
     libnss3 \
     libxss1 \
+    libxfixes3 \
+    libcairo2 \
+    libpango-1.0-0 \
+    libgtk-3-0 \
+    libgdk-pixbuf2.0-0 \
+    libpangocairo-1.0-0 \
+    libx11-xcb1 \
+    libxcursor1 \
+    libcairo-gobject2 \
     wget unzip curl \
     && apt-get clean
