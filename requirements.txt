@@ -1,3 +1,5 @@
+streamlit
+pandas
 playwright
 beautifulsoup4
-streamlit
+openpyxl
