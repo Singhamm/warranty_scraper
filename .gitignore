@@ -1,0 +1,17 @@
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environments
+venv/
+env/
+
+# Playwright generated folders
+playwright-report/
+trace.zip
+
+# OS-specific files
+.DS_Store
+Thumbs.db
