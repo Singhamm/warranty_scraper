@@ -1,7 +1,6 @@
 streamlit
 pandas==1.5.3
 beautifulsoup4
-lxml==4.9.3
-greenlet==2.0.2
 playwright
 openpyxl
+pytest
