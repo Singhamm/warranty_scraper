@@ -1,38 +1,29 @@
-FROM mcr.microsoft.com/devcontainers/python:3.10
+FROM python:3.9-slim
 
-RUN apt-get update && apt-get install -y \
-    libatk1.0-0 \
-    libatk-bridge2.0-0 \
-    libcups2 \
-    libxcomposite1 \
-    libxdamage1 \
-    libxrandr2 \
-    libxkbcommon0 \
+# Install system dependencies for Playwright
+RUN apt-get update && \
+    apt-get install -y \
+    wget \
+    libnss3 \
+    libx11-xcb1 \
+    libxcb-dri3-0 \
+    libxtst6 \
+    libgtk-3-0 \
     libgbm1 \
     libasound2 \
-    libnss3 \
-    libxss1 \
-    libxfixes3 \
-    libcairo2 \
-    libpango-1.0-0 \
-    libgtk-3-0 \
-    libgdk-pixbuf2.0-0 \
-    libpangocairo-1.0-0 \
-    libx11-xcb1 \
-    libxcursor1 \
-    libcairo-gobject2 \
-    libx264-160 \
-    libgstreamer1.0-0 \
-    libgtk-4-1 \
-    libgraphene-1.0-0 \
-    libwoff1 \
-    libvpx7 \
-    libopus0 \
-    libflite1 \
-    libflite-alsa \
-    libflite-dev \
-    libharfbuzz-icu0 \
-    libavif15 \
-    libsecret-1-0 \
-    libx264-160 \
-    && apt-get clean
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /workspace
+
+# Install Python dependencies first (for layer caching)
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Install Playwright browsers
+RUN playwright install chromium
+
+# Copy all files
+COPY . .
+
+EXPOSE 8501
+CMD ["streamlit", "run", "streamlit_app.py", "--server.port=8501", "--server.address=0.0.0.0"]

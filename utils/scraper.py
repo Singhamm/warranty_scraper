@@ -1,40 +1,52 @@
+import pandas as pd
 from playwright.sync_api import sync_playwright
 from bs4 import BeautifulSoup
+import logging
 
-def fetch_lenovo_warranty(serial_number):
-    try:
-        with sync_playwright() as p:
-            browser = p.chromium.launch(headless=True)
-            page = browser.new_page()
-
-            page.goto("https://pcsupport.lenovo.com/in/en/warranty-lookup")
-            page.fill("#txtSerialNumber", serial_number)
-            page.click("#btnSubmit")
-
-            page.wait_for_url("**/warranty", timeout=15000)
-            page.wait_for_selector(".warrantyDetails", timeout=10000)
-
+def scrape_warranty(serial_number):
+    """Scrape Lenovo warranty details with error handling"""
+    with sync_playwright() as p:
+        browser = p.chromium.launch(
+            headless=True,
+            args=["--disable-blink-features=AutomationControlled"]
+        )
+        context = browser.new_context(
+            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+        )
+        page = context.new_page()
+        
+        try:
+            # --- Page Navigation ---
+            page.goto("https://pcsupport.lenovo.com/in/en/warranty-lookup#/", timeout=15000)
+            
+            # --- Form Submission ---
+            page.fill("#input-sn", serial_number)
+            page.click("#btn-sn")
+            
+            # --- Wait for Results ---
+            selector = ".warrantyDetails, .error-message, #no-warranty"
+            page.wait_for_selector(selector, timeout=10000)
+            
+            # --- Parse Results ---
             soup = BeautifulSoup(page.content(), "html.parser")
-            product = soup.find("h1").get_text(strip=True)
-
-            warranty_rows = soup.find_all("div", class_="row warrantyDetailsRow")
-            warranty_info = {}
-            for row in warranty_rows:
-                label = row.find("div", class_="col-sm-4 col-xs-5").get_text(strip=True)
-                value = row.find("div", class_="col-sm-8 col-xs-7").get_text(strip=True)
-                warranty_info[label] = value
-
-            browser.close()
-
+            
+            if soup.select_one(".error-message, #no-warranty"):
+                error_text = soup.select_one(".error-message, #no-warranty").get_text(strip=True)
+                return {"error": f"Lenovo Error: {error_text}", "serial_number": serial_number}
+            
+            # --- Extract Data ---
             return {
-                "Serial Number": serial_number,
-                "Model": product,
-                **warranty_info
+                "serial_number": serial_number,
+                "product_name": soup.select_one(".product-name").get_text(strip=True),
+                "warranty_status": soup.select_one(".warranty-status").get_text(strip=True),
+                "expiry_date": soup.select_one(".expiry-date").get_text(strip=True),
+                "scraped_at": pd.Timestamp.now().isoformat()
             }
-
-    except Exception as e:
-        return {
-            "Serial Number": serial_number,
-            "Model": "Error",
-            "Error": str(e)
-        }
+            
+        except Exception as e:
+            logging.error(f"Scraping failed for {serial_number}: {str(e)}")
+            return {"error": f"System Error: {str(e)}", "serial_number": serial_number}
+        
+        finally:
+            context.close()
+            browser.close()

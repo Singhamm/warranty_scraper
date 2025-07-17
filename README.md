@@ -1,21 +1,24 @@
-# Warranty Scraper
+# Lenovo Warranty Scraper
 
-This project fetches Lenovo product warranty information using a serial number.
+🚀 **One-Click Codespace Setup**:  
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/your-repo)
 
-## 🔧 How it works
+## Features
+- Single/batch warranty checks
+- CSV/Excel upload support
+- Built-in error handling
 
-It uses [Playwright](https://playwright.dev/) to open Lenovo's warranty lookup page, submit a serial number, wait for the redirect, and scrape the product & warranty info.
+## Running in Codespaces
+1. Click "Open in Codespaces"
+2. Wait for container build (auto-installs Playwright)
+3. Terminal will auto-run:
+   ```bash
+   streamlit run streamlit_app.py
+   ```
+4. Open forwarded port (8501) in browser
 
-## ✅ Requirements
-
-- Python 3.7+
-- Playwright
-- BeautifulSoup4
-
-## 📦 Setup Instructions
-
+## Local Development
 ```bash
-git clone https://github.com/yourusername/warranty_scraper.git
-cd warranty_scraper
-pip install -r requirements.txt
-playwright install
+./build.sh  # Installs dependencies
+streamlit run streamlit_app.py
+```

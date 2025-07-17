@@ -1,17 +1,26 @@
 {
-  "name": "Warranty Scraper",
-  "build": {
-    "dockerfile": "Dockerfile"
-  },
+  "name": "Lenovo Warranty Scraper",
+  "dockerFile": "Dockerfile",
+  "forwardPorts": [8501],
+  "postCreateCommand": "./build.sh",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind",
+  "workspaceFolder": "/workspace",
   "customizations": {
+    "codespaces": {
+      "openFiles": ["streamlit_app.py"]
+    },
     "vscode": {
-      "extensions": ["ms-python.python"]
-    }
-  },
-  "postCreateCommand": "pip install -r requirements.txt && python -m playwright install",
-  "features": {
-    "ghcr.io/devcontainers/features/python:1": {
-      "version": "3.10"
+      "extensions": [
+        "ms-python.python",
+        "ms-toolsai.jupyter",
+        "streetsidesoftware.code-spell-checker",
+        "eamodio.gitlens"
+      ],
+      "settings": {
+        "python.linting.enabled": true,
+        "python.linting.pylintEnabled": true,
+        "python.formatting.provider": "black"
+      }
     }
   }
 }
