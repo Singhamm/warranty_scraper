@@ -1,9 +1,14 @@
 #!/bin/bash
-# Install Python dependencies
+set -e  # Stop script on first error
+
+echo "🔧 Installing Python dependencies..."
 pip install -r requirements.txt
 
-# Install Playwright browsers
+echo "🎭 Installing Playwright Chromium browser (headless)..."
 playwright install chromium
 
-# Run tests (optional)
-python -m pytest tests/ -v
+echo "✅ Build script completed successfully."
+
+# Optional: Run tests only if needed (uncomment below)
+# echo "🧪 Running Pytest suite..."
+# python -m pytest tests/ -v
